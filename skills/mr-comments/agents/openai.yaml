@@ -1,0 +1,4 @@
+interface:
+  display_name: "MR Comments"
+  short_description: "Evaluate GitLab MR comments"
+  default_prompt: "Use $mr-comments to fetch and evaluate GitLab MR comments and plan fixes."

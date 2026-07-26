@@ -1,0 +1,4 @@
+interface:
+  display_name: "Remote VM"
+  short_description: "Build and test on remote VMs"
+  default_prompt: "Use $remote-vm to build, test, lint, or run the project on a remote VM."

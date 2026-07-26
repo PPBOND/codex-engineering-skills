@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jira Resolve"
+  short_description: "Resolve Jira issues with MR info"
+  default_prompt: "Use $jira-resolve to resolve a Jira issue using the related GitLab MR information."

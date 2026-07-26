@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan To Design"
+  short_description: "Turn plans into architecture docs"
+  default_prompt: "Use $plan-to-design to convert an implementation plan into an architecture design document."

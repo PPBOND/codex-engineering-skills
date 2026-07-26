@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review MRs or local code changes"
+  default_prompt: "Use $code-review to review a GitLab MR or local commit range."

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Storage System Doctor"
+  short_description: "Diagnose distributed storage deployments"
+  default_prompt: "Use $storage-system-doctor to diagnose service health, capacity, latency, crashes, and logs across storage hosts."
+

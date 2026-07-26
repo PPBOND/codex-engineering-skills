@@ -1,0 +1,4 @@
+interface:
+  display_name: "Retrospective"
+  short_description: "Draft and review retrospective docs (incident / feature-bug / project / decision)"
+  default_prompt: "Use $retro to draft a retrospective document or review an existing one. Supports four types: incident, feature-bug, project, decision."

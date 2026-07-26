@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design To SWDD"
+  short_description: "Convert analysis docs to SWDD"
+  default_prompt: "Use $design-to-swdd to convert a design analysis document into an SWDD."

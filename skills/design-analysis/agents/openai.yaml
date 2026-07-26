@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Analysis"
+  short_description: "Create detailed design analysis"
+  default_prompt: "Use $design-analysis to analyze requirements and produce a detailed design document."

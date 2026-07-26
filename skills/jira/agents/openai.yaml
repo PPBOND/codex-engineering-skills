@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jira"
+  short_description: "Fetch and analyze Jira issues"
+  default_prompt: "Use $jira to fetch and analyze the provided Jira issue or query."

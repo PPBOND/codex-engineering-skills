@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quarterly Report"
+  short_description: "Generate a quarterly work report"
+  default_prompt: "Use $quarterly-report to generate a personal quarterly work summary from activity history."

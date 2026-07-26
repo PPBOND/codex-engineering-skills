@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Handover Doc"
+  short_description: "Generate test-handover doc from design / SWDD / UT / integration inputs"
+  default_prompt: "Use $test-handover to assemble a test-handover document from design analysis, SWDD, UT/integration results and PRD links, with section-by-section gap checks."

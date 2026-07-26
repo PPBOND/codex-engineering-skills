@@ -1,0 +1,4 @@
+interface:
+  display_name: "CI/CD Check"
+  short_description: "Find root causes in failed pipelines and tests"
+  default_prompt: "Use $cicd-check to diagnose this pipeline, test, log, crash, or core-dump failure."

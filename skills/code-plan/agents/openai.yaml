@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Plan"
+  short_description: "Create a coding plan from requirements"
+  default_prompt: "Use $code-plan to turn the requirement into an actionable coding plan."

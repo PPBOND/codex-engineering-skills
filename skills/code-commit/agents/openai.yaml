@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Commit"
+  short_description: "Create a formatted git commit"
+  default_prompt: "Use $code-commit to create a properly formatted git commit for the current changes."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Storyboard From Markdown"
+  short_description: "Create storyboard PDFs from Markdown"
+  default_prompt: "Use $storyboard-from-markdown to turn a Markdown document into a visual storyboard PDF."

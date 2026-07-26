@@ -1,0 +1,4 @@
+interface:
+  display_name: "MR Submit"
+  short_description: "Submit a GitLab merge request"
+  default_prompt: "Use $mr-submit to create a GitLab merge request from the current branch."

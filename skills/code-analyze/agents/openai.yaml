@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Analyze"
+  short_description: "Explain code paths and risks"
+  default_prompt: "Use $code-analyze to trace code flow and explain risky paths for the requested code."

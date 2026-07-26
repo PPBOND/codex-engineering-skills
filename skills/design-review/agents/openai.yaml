@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Review"
+  short_description: "Review design docs for gaps"
+  default_prompt: "Use $design-review to review a design, SWDD, spec, or PRD for gaps and contradictions."

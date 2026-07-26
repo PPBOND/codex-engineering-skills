@@ -1,0 +1,4 @@
+interface:
+  display_name: "Proposal"
+  short_description: "Submit structured proposal issues"
+  default_prompt: "Use $proposal to extract a proposal from a plan file and submit it as a GitLab issue."

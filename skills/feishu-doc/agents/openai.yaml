@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feishu Doc"
+  short_description: "Create or update Feishu docs"
+  default_prompt: "Use $feishu-doc to create, update, or publish content to Feishu documents."

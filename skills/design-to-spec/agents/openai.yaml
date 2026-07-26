@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design To Spec"
+  short_description: "Convert design docs to implementation specs"
+  default_prompt: "Use $design-to-spec to turn a design document into an implementation-ready spec."

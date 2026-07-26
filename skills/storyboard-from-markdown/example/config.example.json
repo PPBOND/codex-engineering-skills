@@ -1,0 +1,41 @@
+{
+  "generate_cover": true,
+  "style": "clean enterprise technical illustration, blue and white color palette, modern minimal layout, crisp typography, icon-based diagram language, consistent visual system across all pages",
+  "max_pages": 20,
+  "selection_mode": "auto",
+  "core_page_target": 8,
+  "auto_core_threshold": 6,
+  "include_titles": [],
+  "skip_titles": [
+    "飞书项目链接",
+    "变更记录",
+    "错误码",
+    "可观测性"
+  ],
+  "default_visual_type": "concept summary illustration",
+  "title_visual_types": {
+    "评审摘要": "summary slide",
+    "设计方案": "architecture diagram",
+    "核心流程": "flow diagram",
+    "接口定义": "API contract slide",
+    "UT 和 Integration 用例设计": "test plan slide"
+  },
+  "title_hint_overrides": {
+    "评审摘要": [
+      "本文覆盖：目录级 QoS 首期完整交付",
+      "本文不包含：用户级 QoS、元数据 ops 限流、用户暴露 burst 配置面",
+      "本阶段承诺：Client 限流、Server 协调、6 桶独立限流",
+      "管理面输出：QoS 统计与观测指标"
+    ]
+  },
+  "title_prompt_extras": {
+    "评审摘要": "Prefer two-column scope summary and a few compact highlight badges.",
+    "设计方案": "Prefer a layered architecture view with concise labels instead of dense bullet lists.",
+    "核心流程": "Prefer 3-4 main flows only, not every branch.",
+    "接口定义": "Prefer a small number of API cards, not a full error table.",
+    "UT 和 Integration 用例设计": "Prefer grouped validation categories and P0/P1 highlights."
+  },
+  "include_page_number_hint": true,
+  "cover_prompt_extra": "Create a strong cover page for a technical design document. Emphasize architecture, AI infrastructure, storage, and a polished enterprise presentation look.",
+  "page_prompt_extra": "Keep the illustration presentation-ready, diagram-friendly, and easy to read. Use concise labels when necessary."
+}

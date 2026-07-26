@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Auto"
+  short_description: "Run staged coding plans with validation"
+  default_prompt: "Use $code-auto to implement the coding plan or spec file and validate each stage before submitting an MR."

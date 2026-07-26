@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auto Fix"
+  short_description: "Fix from issue or problem description"
+  default_prompt: "Use $auto-fix. Accepts issue (GitLab/Jira), plan file, or raw problem text. If no fix plan is present, $auto-fix calls $code-plan + $proposal first; otherwise it goes straight into $code-auto and prepares an MR."
