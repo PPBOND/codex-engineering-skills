@@ -1,0 +1,4 @@
+interface:
+  display_name: "分层工程架构图"
+  short_description: "按统一分层配色绘制清晰易读的架构、IO 与恢复流程图"
+  default_prompt: "Use $draw-layered-engineering-diagrams to turn this engineering workflow into a clear layered architecture diagram."

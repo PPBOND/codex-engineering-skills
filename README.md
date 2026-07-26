@@ -1,6 +1,6 @@
 # Codex Engineering Skills
 
-A reusable collection of 35 Codex skills for software design, implementation,
+A reusable collection of 36 Codex skills for software design, implementation,
 review, testing, CI diagnosis, documentation, and engineering operations.
 
 The repository contains no organization-specific hostnames, project names, fixed
@@ -64,6 +64,10 @@ skills/
 - `metadata-shard-develop` — guide metadata-shard design and implementation.
 - `small-file-compaction-develop` — develop a small-file packing subsystem.
 - `storage-system-doctor` — diagnose distributed storage deployments.
+
+### Visualization
+
+- `draw-layered-engineering-diagrams` — generate consistent layered engineering diagrams as PNG files.
 
 ### External Systems
 
@@ -327,6 +331,23 @@ skills/
   5. 列出未覆盖路径、限制、回滚条件和监控方式。
   6. 逐章检查 current scope、follow-up 和 out-of-scope。
 - 产出：可用于转测和验收的完整 handover 文档。
+
+### 可视化
+
+#### `draw-layered-engineering-diagrams`
+
+- 触发场景：绘制或重绘架构、I/O、存储引擎、事务、恢复和生命周期工程图。
+- 输入：需要表达的系统事实、源码或设计材料，以及期望的教学目标。
+- 工作流程：
+  1. 查看自带的参考图片和 `style-spec.md`，确认画布、布局、配色和视觉语法。
+  2. 审核源码、测试或用户材料，区分已验证行为、推断和风险。
+  3. 用一句话定义图的教学目标，只保留支持该目标的层级、卡片和箭头。
+  4. 复用 `layered_diagram.py` 的绘图组件，创建当前任务专用的生成器。
+  5. 按“调用方 → 接口/索引 → 执行 → 持久化/输出”的顺序生成 2000×1400 PNG。
+  6. 以原始分辨率检查文字、箭头方向、分支关系、单位和地址/数据语义。
+  7. 根据视觉检查迭代，复杂内容超过四层时拆成多张图。
+- 视觉规则：蓝色表示主路径，绿色表示索引/查询，橙色表示持久化，紫色虚线表示控制/恢复，红色只用于源码或测试已确认的风险。
+- 产出：最终 PNG、可复现的生成脚本，以及必要时用于文档替换的验证结果。
 
 ### 构建、测试、CI 与性能
 
