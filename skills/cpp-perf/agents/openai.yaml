@@ -1,0 +1,4 @@
+interface:
+  display_name: "C++ Perf"
+  short_description: "Optimize C++17 performance with measurements"
+  default_prompt: "Use $cpp-perf to analyze and optimize this C++17 performance hotspot."

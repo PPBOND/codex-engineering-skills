@@ -7,6 +7,12 @@ description: "对 design / analysis / swdd / spec / PRD 做交叉评审，输出
 
 拿到设计文档（自己写的、他人写的、AI 生成的）做交叉评审，输出**分级 todo list**——而不是空泛的"看起来不错"。
 
+## Karpathy 评审守则
+
+评审前读取并应用
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md)。
+明确区分文档已证实事实、隐含假设和待决选择；只报告与已声明范围相关且有证据的问题，替代方案说明取舍并由设计者决策，不把未证实猜测或已明确放弃的需求当作缺陷。
+
 适用产物：design analysis、SWDD、Spec、PRD、架构方案、技术选型对比文档。
 
 ## 触发场景

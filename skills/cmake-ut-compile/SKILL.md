@@ -9,7 +9,9 @@ description: Configure, compile, and run one or more CMake targets or unit tests
 
 Inspect repository instructions, `CMakeLists.txt`, presets, Conan files, build
 wrappers, and existing build directories. Use the project's documented entrypoint.
-Do not assume build type, generator, container, target names, or parallelism.
+Resolve build type, generator, container, targets, and parallelism from existing
+configuration and task requirements. Ask only when a missing choice affects the
+result; do not request values that can be read from presets or CMakeCache.
 
 ## Workflow
 
@@ -20,7 +22,7 @@ Do not assume build type, generator, container, target names, or parallelism.
 5. Build only requested targets first.
 6. Run tests through `ctest` when registered; otherwise run the executable using the
    documented environment and working directory.
-7. On failure, report the first compile/link/runtime cause and the exact command.
+7. On failure, diagnose the first compile/link/runtime cause. For an implementation task, fix in-scope issues and rerun the affected checks; for a diagnosis-only task, deliver the cause and evidence. After required checks pass, repeat or broaden testing only for new changes, failures, unresolved risks, or explicit project requirements.
 
 Generic command shapes:
 
@@ -44,4 +46,3 @@ Use Conan only when the repository declares it. Never invent a package profile.
 
 Report configuration used, targets built, tests run, elapsed result, artifact path,
 and any unresolved failure.
-

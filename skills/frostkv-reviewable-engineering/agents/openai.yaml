@@ -1,0 +1,4 @@
+interface:
+  display_name: "FrostKV Reviewable Engineering"
+  short_description: "Make storage code simple, traceable, and easy to review"
+  default_prompt: "Use $frostkv-reviewable-engineering to analyze and improve a storage codebase."

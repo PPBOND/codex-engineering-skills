@@ -64,4 +64,3 @@ Return:
 3. evidence with timestamps and source files;
 4. root-cause assessment and confidence;
 5. immediate mitigation, long-term fix, and validation steps.
-

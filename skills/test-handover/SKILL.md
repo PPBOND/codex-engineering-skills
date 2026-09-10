@@ -60,4 +60,3 @@ For each scenario include:
 Do not mark a test as passed without evidence. Do not present planned or follow-up
 work as current acceptance scope. Redact credentials and personal information from
 logs before linking them.
-

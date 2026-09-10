@@ -41,4 +41,3 @@ Use the API version supported by the target Jira deployment.
 
 Provide the issue or query scope, concise summary, current status, blockers,
 dependencies, risks, and recommended next step with source links.
-

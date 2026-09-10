@@ -1,4 +1,0 @@
-interface:
-  display_name: "UT Coverage"
-  short_description: "Improve unit-test coverage"
-  default_prompt: "Use $ut-coverage to analyze coverage gaps and implement focused unit tests."

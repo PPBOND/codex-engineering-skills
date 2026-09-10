@@ -7,6 +7,12 @@ description: Design, implement, build, deploy, run, and diagnose integration tes
 
 Use this skill for either test-case design or end-to-end test execution.
 
+## Karpathy Test-Development Guardrail
+
+Read and apply
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md).
+Derive each case from an observable requested behavior or credible risk, use the narrowest environment and test surface that can prove it, and state setup/action/expected evidence before adding infrastructure. Preserve existing test environments and do not introduce speculative scenarios or cleanup outside the task.
+
 ## Discover the Project Contract
 
 Before acting, inspect:
@@ -58,4 +64,3 @@ environment configuration. Never hard-code hosts.
 
 Report the environment, commands, cases, results, artifact locations, root cause of
 failures, and remaining gaps.
-

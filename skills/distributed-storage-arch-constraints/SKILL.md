@@ -60,4 +60,3 @@ For each stateful object, define:
 
 A design is incomplete until it identifies the truth source, execution context,
 memory bounds, failure recovery, compatibility behavior, observability, and tests.
-

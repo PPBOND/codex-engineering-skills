@@ -41,4 +41,3 @@ Run the bundled demo when changing primitives:
 ```powershell
 python scripts/layered_diagram.py --demo --output demo.png
 ```
-

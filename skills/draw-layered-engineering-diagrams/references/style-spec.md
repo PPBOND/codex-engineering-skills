@@ -54,4 +54,3 @@ Never label an address as the payload itself.
 - Confirm dashed paths are control, recovery, optional, or external responsibility.
 - Confirm the footer conclusion is consistent with the arrows.
 - When the diagram is inserted at 900 px width, the layer titles and main field values must remain readable.
-

@@ -1,13 +1,29 @@
 ---
 name: code-review
-description: Structured code review for GitLab MRs or local changes in Codex, including spec-conformance review against implementation specs and quality-gate matrices. Use for review, 审查, MR review, commit range review, fix coverage, 按 spec review, 完整 review, 架构约束检查, or GitLab review comments.
+description: Structured code review for GitLab MRs or local changes in Codex, including strict C++17-only systems-code checks, a C++17-filtered Google C++ Style Guide, spec-conformance review, and quality-gate matrices. Use for review, 审查, MR review, commit range review, C++ review, fix coverage, 按 spec review, 完整 review, 架构约束检查, or GitLab review comments.
 ---
 
 # Code Review
 
+## Karpathy 审查视角
+
+审查前读取并应用
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md)。
+除正确性检查外，核对每项改动是否可追溯到需求，识别无当前调用方的抽象、假想灵活性和无关重构；finding 必须有证据，修复建议应是最小可信修复，未证实疑虑只能记为 NOTE 或澄清问题。
+
+## C++17 Agent Standards（ECC / Core Guidelines / 社区规则）
+
+当 diff 涉及 C++、CMake、编译参数或 C/C++ ABI 时，除现有 `references/cpp17-review.md` 与 Google C++17 profile 外，必须读取并应用 `references/cpp17-agent-standards.md`。
+
+- 将 Per.1–Per.19（上游定义的 Per.1–Per.7、Per.10–Per.19）加入 P 维度清单；Per.8/Per.9 不虚构规则。
+- 对新增性能改动检查 baseline、profiling/benchmark、正确性测试和同 workload 前后对比；没有证据的伪优化按 `MAJOR [P]` 或 `MINOR [P]` 报告，并给出补证据方案。
+- 检查 cache locality、AoS/SoA、结构体布局、padding、false sharing、冗余间接层和关键路径分配；不以指针类型本身作为问题，重点核对其所有权、生命周期、回收协议和性能证据。
+- 以 RAII、Rule of Zero/Five、与项目所有权模型匹配的指针/句柄选择、`string_view` 生命周期、强类型接口和锁/原子内存序为审查重点。
+- C++20/23 语法、库 API 或编译选项仍按现有 `CRITICAL [Q]` 硬门禁处理，修复只能使用 C++17。
+
 对代码变更做结构化审查。支持两种输入：
 
-- **MR 模式**：审查 GitLab MR，并把最终 review 发布为 MR comment。
+- **MR 模式**：审查 GitLab MR，默认在当前对话交付；用户明确授权发布 review/comment 时才发布并回读。
 - **本地模式**：审查本地目录的 commit range，并在终端输出结果。
 
 ## 完成标准
@@ -15,9 +31,10 @@ description: Structured code review for GitLab MRs or local changes in Codex, in
 - 已判断输入模式，并获取完整 diff、MR 信息和项目背景。
 - 已按变更规模选择轻量审查或拆分审查。
 - 已覆盖正确性、异常处理、生命周期、性能、可维护性和测试覆盖风险。
+- C++ 变更已按项目编译配置和 C++17 基线检查语言兼容性、模板、内存、并发、性能、ABI 与构建验证风险。
 - 如果存在 spec 或用户要求按 spec review，已检查 RCT、生命周期、touchpoint、边界错误、运行时不变式和文档范围一致性。
 - CRITICAL 结论已做交叉验证，无法验证的结论已降级为 NOTE。
-- MR 模式已发布 1 条完整 comment 并回读验证；本地模式已输出完整 markdown。
+- 所有模式均已交付完整 review；评论发布已获授权时，发布 1 条完整 comment 并回读验证。仅审阅无需发布。
 - 临时文件已清理。
 
 ## 使用方式
@@ -34,11 +51,11 @@ $code-review <path> [commit_range]
 ## Step 0: 初始化与模式判断
 
 1. 解析用户参数，按优先级判断模式：
-   - 参数包含 `merge_requests`：MR 模式。URL 路径格式为 `.../<group>/<repo>/-/merge_requests/<mr_number>`，提取 `<repo>` 和 `<mr_number>`，仓库目录默认 `~/github/<repo>`；目录不存在时提示用户提供 `<project> <mr_number>`。
+   - 参数包含 `merge_requests`：MR 模式，从 URL 提取仓库与 MR；优先用当前工作区/已知匹配 checkout，其次使用 API diff。`~/github/<repo>` 仅是候选路径，目录不存在不单独构成阻塞。
    - 第二个参数是纯数字：MR 模式，`project` 为第一个参数，`mr_number` 为第二个参数。
    - 其他情况：本地模式，`path` 为第一个参数，`commit_range` 为第二个参数或 `master...HEAD`。
-2. MR 模式确认 `~/github/<project>` 存在，并运行 `glab auth status` 确认 GitLab 认证有效；认证失败时提示用户检查 token 并终止。
-3. 读取项目说明文件：MR 模式读取 `~/github/<project>/CLAUDE.md`，本地模式读取 `<path>/CLAUDE.md` 或向上查找；若不存在，再读取 `AGENTS.md`、`README.md` 等项目说明。
+2. MR 模式检查认证和可用 diff；认证失败只阻塞依赖 API 的步骤，已有本地 diff/材料时继续可完成的审查，并明确证据缺口。不得绕过访问控制或要求用户在对话中贴 token。
+3. 先读取实际工作区适用的 `AGENTS.md`，再按需读取 `CLAUDE.md`、`README.md` 等项目背景；不能因存在 `CLAUDE.md` 而跳过 `AGENTS.md`。
 4. 如果项目说明引用 review-rule 文件，例如 `docs/code_review_checklist.md`，也读取对应文件。
 5. 判断是否启用 **Spec-Conformance Review**：用户说“按 spec review / 完整 review / 架构约束”，diff 修改 `docs/spec/`，MR 描述提供 spec，或仓库内能找到与 feature 同名的 spec。
 
@@ -119,6 +136,7 @@ for i, f in enumerate(files):
 | 热路径文件变更 | 性能 | 内存分配、锁、系统调用、拷贝 |
 | `new`, `delete`, `shared_ptr`, `unique_ptr`, `weak_ptr` | 内存安全 | 所有权、生命周期、泄漏 |
 | `std::mutex`, `std::atomic`, `std::thread` | 并发 | 竞态、死锁、内存序 |
+| `.h/.hpp/.cc/.cpp`、`CMAKE_CXX_STANDARD`、模板或 STL 变更 | C++17 专项 | 标准兼容、类型/所有权、模板实例化、ABI、缓存与验证门禁 |
 | 新增或修改公共 API | API 设计 | 易用性、错误处理、抽象边界 |
 | `*_test.cpp`, `TEST(`, `BENCHMARK(` | 测试/基准 | 覆盖率、场景完整性 |
 
@@ -180,7 +198,7 @@ PYEOF
 
 优先在不混淆上下文的前提下拆分审查：
 
-- 可用 Codex sub-agent 且模块之间无依赖时，每批最多 4 个 reviewer 并行。
+- 项目多 Agent 开关已允许、能力可用且模块独立时，按项目并发上限委派 reviewer。
 - 不能并行时，由当前 agent 按同一 checklist 串行审查。
 - 小变更（< 200 行）不拆分模块，直接审查完整 patch。
 
@@ -212,6 +230,14 @@ Checklist：
 ```
 
 ### 必查项
+
+#### C++17 专项审查
+
+diff 包含 C++ 源文件、头文件或 CMake/C++ 编译配置时，必须同时读取并应用 [C++17 Review Reference](references/cpp17-review.md) 和 [Google C++ Style Guide — C++17 Profile](references/google-cpp-style-cpp17.md)：
+
+- 规则优先级：用户明确要求 > 禁止 C++20+ 的硬门禁 > `AGENTS.md`/`CLAUDE.md` > 仓库既有规范与局部风格 > Google C++ 规范 > 通用 C++17 建议。
+- C++17 是不可放宽的最高标准。diff 新增 C++20/23 语法、标准库 API、编译选项，或把构建标准提升到 C++20+，必须输出 `CRITICAL [Q]` 并阻止合入；修复方案只能使用 C++17。
+- 仅报告与当前 diff、调用路径和项目约束相关的问题。工具检查和性能优化必须给出可执行验证方法，不得把“未运行 clang-tidy/Valgrind”等直接当成代码缺陷。
 
 #### C++ 继承关系
 
@@ -305,14 +331,14 @@ diff 涉及 `Init/Fini`、`Open/Close`、构造/析构等生命周期方法时�
 
 ## Step 5: 汇总与发布
 
-本步骤是终点动作。完成汇总、去重和 CRITICAL 交叉验证后，MR 模式立即发布 comment，不在发布前要求用户预览或确认。即使存在 CRITICAL，也照常发布；严重程度由 Stats 表展示。只有 GitLab API 返回错误时才向用户说明。
+完成汇总、去重和证据交叉验证后，交付当前请求的 review。用户明确授权发布到指定 MR 时直接发布，无需重复确认；仅提供 MR 链接或要求审阅不代表授权发评论。发布失败保留完整结论并说明原因，不能因此丢弃已完成的审查。
 
 1. 合并所有模块 findings 和设计文档评审结果。
 2. 去重：同一位置同一问题只保留一条。
 3. 执行 CRITICAL 交叉验证：
    - 文件不存在：降级 NOTE，说明“文件未找到，疑似 working tree 漂移”。
    - 符号不存在：降级 NOTE，说明“符号未定位”。
-   - 文件和符号都存在：保留 CRITICAL。
+   - 文件和符号都存在：继续核对触发条件、受影响路径与严重后果；存在本身不足以证明 CRITICAL，未证实疑虑记为 NOTE，不据此阻断正常工作。
 4. 按严重程度排序：CRITICAL -> MAJOR -> MINOR -> NOTE。
 5. 整理为 Review 输出格式。
 6. 若存在设计文档评审，将 `/tmp/mr-<project>-<mr_number>-design-review.md` 整段嵌入 `## Design Doc Review`；解析末行 stats，把 P0/P1 计数累加到 Stats 表的 CRITICAL/MAJOR 行，不重复列出 finding。
@@ -320,7 +346,7 @@ diff 涉及 `Init/Fini`、`Open/Close`、构造/析构等生命周期方法时�
 
 ### MR 模式发布与回读验证
 
-使用稳定参数发布 MR comment：
+仅在评论发布已获授权时，使用稳定参数发布 MR comment：
 
 ```bash
 glab api --method POST projects/:fullpath/merge_requests/<mr_number>/notes -f body=<review_md>
@@ -373,7 +399,7 @@ T 维度仅在 MR 为 fix 类型时启用。
 | CRITICAL | 数据安全或正确性问题 | 阻塞合入 |
 | MAJOR | 可靠性、性能或 spec conformance 风险 | 强烈建议修复；必需行为缺失、生命周期状态可能陈旧、mutating RPC 缺 owner 校验时阻止继续实现下一阶段 |
 | MINOR | 代码质量或可维护性问题 | 建议修复 |
-| NOTE | 设计讨论或疑问 | 需要确认 |
+| NOTE | 未证实疑虑或设计讨论 | 记录证据缺口，默认不阻塞；只有当前任务依赖的实质选择才请求确认 |
 
 ## Review 输出格式
 

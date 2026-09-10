@@ -5,7 +5,13 @@ description: Analyze code step-by-step based on user requirements. Explains cont
 
 # Code Analyze
 
-根据用户需求深度分析代码，逐步解析执行流程，标注易错点，生成流程图，并将结果写入文件。
+按问题所需深度分析代码并给出证据；简单解释直接回答。只有用户要求文档或实施任务需要持久化分析时写文件，复杂流程才配图。
+
+## Karpathy 分析守则
+
+分析非平凡问题前读取并应用
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md)。
+输出中区分已验证事实、有限假设与未解问题；只扩展到回答当前问题所需的调用链，并给出能验证分析结论的代码位置、测试或剩余不确定性。
 
 ## 文件命名
 
@@ -35,7 +41,7 @@ description: Analyze code step-by-step based on user requirements. Explains cont
 
 ### 3. 执行分析
 
-- **[PARALLEL]**：Codex sub-agent 同时启动多个 agent
+- **[PARALLEL]**：表示任务独立；多 Agent 开关已允许时才启动 sub-agent，否则主 agent 顺序完成
 - **[SEQUENTIAL]**：按顺序执行
 - 收集结果后合并、去重、生成全局视图
 
@@ -106,7 +112,7 @@ description: Analyze code step-by-step based on user requirements. Explains cont
 ## 规范
 
 1. **分析计划**：包含模块划分、依赖关系、`[PARALLEL]/[SEQUENTIAL]` 标注
-2. **并行执行**：单个消息发送多个 sub-agent 调用，等待全部完成后汇总
+2. **委派边界**：遵守项目多 Agent 手动开关；缺少授权或能力时由主 agent 完成，不因此停下或索取委派许可
 3. **每个 Step**：说明代码位置、执行内容、状态变化
 4. **易错点**：说明表象 vs 实际、为什么容易错、正确理解方式
 5. **持续分析**：同一主题追加而非覆盖，用分隔线区分

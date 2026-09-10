@@ -8,6 +8,12 @@ description: Design, implement, test, and review a generic small-file compaction
 Use for systems that combine many small objects into larger container files while
 preserving lookup, deletion, recovery, and lifecycle correctness.
 
+## Karpathy Scope Guardrail
+
+Read and apply
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md).
+Use only state, controls, and abstractions justified by current lifecycle requirements; distinguish verified facts from assumptions; keep changes scoped to the requested subsystem; and attach each durable-transition claim to a test or recovery check.
+
 ## Required Model
 
 Define:
@@ -58,4 +64,3 @@ Cover:
 
 Report violated invariants, unsafe transitions, memory growth, recovery gaps, and
 missing tests with concrete source locations.
-

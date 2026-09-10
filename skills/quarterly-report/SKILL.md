@@ -49,4 +49,3 @@ Produce:
 5. growth and lessons;
 6. next-quarter priorities;
 7. source coverage and known gaps.
-

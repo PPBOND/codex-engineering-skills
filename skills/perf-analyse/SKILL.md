@@ -60,4 +60,3 @@ Include:
 - confidence and data gaps;
 - recommended experiment or configuration change;
 - exact queries used.
-

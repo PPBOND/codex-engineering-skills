@@ -38,4 +38,3 @@ grep -Rni '<request-or-object-id>' <log-root>
 
 Return a concise timeline, evidence with file and timestamp, root cause and
 confidence, affected scope, mitigation, permanent fix, and missing evidence.
-

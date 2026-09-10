@@ -5,6 +5,12 @@ description: Fetch merge-request discussions or a specific review note and evalu
 
 # Merge-Request Comment Evaluation
 
+## Karpathy Comment-Review Guardrail
+
+Read and apply
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md).
+Classify comments from current diff/source/design evidence, keep unverified claims as clarification requests, and propose only the smallest task-relevant fix; do not turn a valid localized comment into a broad refactor or unrelated cleanup.
+
 ## Inputs
 
 - merge-request URL;
@@ -34,4 +40,3 @@ MR number, and optional note ID from the supplied URL; do not assume a host.
 For each note, report author, location, concern, assessment, evidence, and suggested
 action. Highlight comments that could cause correctness, security, data, or
 compatibility issues.
-

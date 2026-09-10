@@ -1,0 +1,7 @@
+interface:
+  display_name: "Grill Me"
+  short_description: "One-question plan and design stress test"
+  default_prompt: "Use $grill-me to pressure-test this plan one decision at a time before implementation."
+
+policy:
+  allow_implicit_invocation: false

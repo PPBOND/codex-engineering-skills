@@ -2,4 +2,3 @@ interface:
   display_name: "Performance Analysis"
   short_description: "Analyze latency, throughput, errors, and saturation"
   default_prompt: "Use $perf-analyse to fetch and compare Prometheus performance metrics and identify the likely bottleneck."
-

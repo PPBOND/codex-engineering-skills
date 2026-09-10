@@ -5,6 +5,12 @@ description: Improve C++ unit-test coverage by mapping uncovered lines and branc
 
 # C++ Unit-Test Coverage
 
+## Karpathy Test Guardrail
+
+Before adding tests, read and apply
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md).
+Map each test to a concrete uncovered behavior or risk, choose the smallest stable seam, and define the observable assertion and coverage result. Do not add broad fixtures, production hooks, or scenarios unsupported by the current contract merely to raise a metric.
+
 ## Workflow
 
 1. Resolve the coverage report to exact source lines and branches.

@@ -5,6 +5,12 @@ description: Repository entrypoint for metadata-shard development. Use when work
 
 # Metadata Shard Development
 
+## Karpathy Change Guardrail
+
+Before design or edits, read and apply
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md).
+Separate confirmed shard behavior from assumptions, choose the smallest change supported by the current routing/ownership contract, avoid unrelated refactoring, and define the exact build/test or recovery evidence required to claim completion.
+
 The repository is the source of truth. Before editing:
 
 1. locate metadata-shard source, protocol definitions, design documents, and tests;
@@ -19,4 +25,3 @@ idempotency, restart recovery, and compatibility.
 
 Do not invent file paths or command names. If normative module documentation is
 missing, state the gap and derive behavior from code with exact references.
-

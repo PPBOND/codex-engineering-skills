@@ -8,6 +8,12 @@ description: Review C++ distributed-storage changes for correctness, concurrency
 Review a local diff, commit range, or merge request. Report only actionable findings
 supported by source evidence.
 
+## Karpathy Review Guardrail
+
+Read and apply
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md).
+Distinguish verified contract changes from inference; flag scope creep, unnecessary state or abstraction, and unrelated edits alongside storage risks. Recommend the smallest credible fix, while never treating persistence, recovery, concurrency, ownership, or security failures as “impossible” without evidence.
+
 ## Establish Scope
 
 1. Resolve the base and head revisions.
@@ -65,4 +71,3 @@ supported by source evidence.
 Each finding must include severity, file and line, impact, triggering scenario, and
 the smallest credible fix. If no actionable finding exists, say so and list residual
 test risk.
-

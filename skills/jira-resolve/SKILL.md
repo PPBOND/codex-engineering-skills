@@ -36,4 +36,3 @@ idempotently handle retries.
 ## Output
 
 Report the issue, MR, comment result, transition applied, and verified final status.
-

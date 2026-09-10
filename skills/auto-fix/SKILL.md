@@ -1,30 +1,36 @@
 ---
 name: auto-fix
-description: 基于 Issue 或问题描述自动修复：判定方案完备度 → 缺方案则先生成方案并提交 issue → 创建分支 → code-auto → MR。
+description: 基于 Issue、计划或问题描述完成已授权的修复与验证。按需生成本地计划；分支、提交、Issue 评论及 MR 遵循用户和项目授权。
 ---
 
 # Auto Fix
 
 基于 Issue 或问题描述自动完成修复闭环。支持两类输入：
 
+## Karpathy 修复守则
+
+修复前读取并应用
+[`../code-auto/references/karpathy-coding-guardrails.md`](../code-auto/references/karpathy-coding-guardrails.md)。
+先把现象、已证实根因或假设、最小修复范围和验收证据分开；不把 Issue 顺带扩展成重构或新能力。能复现时以复现失败后通过为完成条件，不能复现时明确证据缺口和最小可验证替代。
+
 - **类型 1（含方案）**：issue 含修改方案 / 已有 plan 文件 / 用户给 diff → 直接走 `$code-auto`
-- **类型 2（仅问题）**：仅问题描述 → 先 `$code-plan` 生成方案，落到 issue，再走 `$code-auto`
+- **类型 2（仅问题）**：仅问题描述 → 先查明根因，复杂修复用 `$code-plan` 生成本地方案，再走 `$code-auto`；发布方案到 issue 需要单独满足授权。
 
-## Rule 0: 分支隔离规则（最高优先级，无例外）
+## Rule 0: 工作区隔离与授权
 
-**Step 5（执行修复）前必须由 Step 4 创建一个全新的修复分支并 checkout 到它**，否则 `$code-auto` 会污染调用者所在的旧分支或保护分支。
+Step 5 前按 Step 4 确定本任务工作区，保护调用者分支和已有改动。创建命名分支、提交、发布评论、push/MR 必须满足用户及项目授权，不能仅由调用本 Skill 推断许可。
 
-**绝对禁止：**
-- 跳过 Step 4，在当前所在分支（哪怕分支名已经匹配 `fix-*` 模板）直接调用 `$code-auto`
-- 在 `master` / `main` / `release-*` 等保护分支上直接干活
-- 复用历史 `fix-*` 分支但不重新基于最新 `origin/master`（或显式指定 base）
+**必须保留的保障：**
+- 不在保护分支直接实施，不自动 stash、丢弃、覆盖用户改动。
+- 不自动删除/重建同名分支，不强制 rebase 或改写历史；这些动作仍需明确批准。
+- 用户明确要求继续原任务时，核对原任务分支、diff 和进度后续作，不以“必须本轮新建”阻止恢复。
 
-**默认 base = `origin/master`**。仅当用户在输入中显式指定其它 base（如"基于 release-2.0 切"、"--base xxx"）时使用指定值。不要使用本地 `master`、当前 `HEAD`、上次中断时所在的分支。
+base 优先使用用户指定引用或已确认任务基线；新任务按仓库实际远端默认分支确定，不能写死 `origin/master`。多个目标确实无法区分时再询问，不重置已授权的 WIP。
 
-**进入 Step 5 的硬性前置条件：**
-1. 当前 `HEAD` 所在分支 = Step 4 这一轮新建的分支（用 `git rev-parse --abbrev-ref HEAD` 校验）
-2. 该分支刚从 `origin/<base>` checkout 出来，且 worktree clean
-3. 任一条不满足 → 停下并向用户报告，不要继续 `$code-auto`
+**进入 Step 5 的前置条件：**
+1. 当前路径和 HEAD/分支与 Step 4 记录的任务目标一致。
+2. 能区分本任务 diff、plan 和进度文件与无关改动；本任务产生的文件不算工作区污染。
+3. 如发生路径/基线不符或无法安全保留的重叠修改，先解决隔离问题；只有缺少外部决定时暂停依赖步骤。
 
 ## 输入
 
@@ -59,7 +65,7 @@ description: 基于 Issue 或问题描述自动修复：判定方案完备度 �
 - 只有"现象 / 复现步骤 / 报错日志 / 期望行为"
 - 没有任何文件路径、代码片段、diff
 
-判定不确定时向用户确认：含方案 / 仅问题 / 我先看下。
+输入分类由当前 agent 判断；缺少方案时继续诊断，不让用户替工具选择流程类型。只有无法从证据解决的业务语义或范围选择需要澄清。
 
 ### 3. 方案准备
 
@@ -74,8 +80,8 @@ description: 基于 Issue 或问题描述自动修复：判定方案完备度 �
 #### 类型 2（仅问题）
 
 1. 调用 `$code-plan`，把问题描述 / issue 内容作为需求生成方案，产出 `task_plan-fix-<task>.md`
-2. 用户 review plan（`$code-plan` 内含确认环节）
-3. 把方案落到 issue：
+2. 复用已有决策；用户明确要求先审 plan 或存在未决重大取舍时保留 review 关卡，其余按修复授权继续。
+3. 仅在用户授权发布时把方案落到 issue；否则保留本地计划并继续修复：
    - **已有 issue（B2）** → 直接用 `glab issue note` 把 plan 中的"修改方案"和"使用示例"作为两条 comment 追加到原 issue
      ```bash
      glab issue note <n> --repo <g>/<p> --message "$(cat <<'EOF'
@@ -93,36 +99,33 @@ description: 基于 Issue 或问题描述自动修复：判定方案完备度 �
 
 ### 4. 创建修复分支
 
-> **本步骤不可跳过**。即便当前已经在某个 `fix-*` 分支上（上一轮中断、用户手动切过、之前测试遗留），也必须重新走完本步骤——根据 Rule 0，`$code-auto` 必须在"本轮新建并基于最新 base"的分支上跑。
+> 实施前必须核对工作区。该检查不要求每次重建分支，不把用户已有改动或本任务 plan 当作需要丢弃的内容。
 
 1. **预检**：
-   - 解析 base 分支：默认 `origin/master`；用户输入若含"基于 X 切"、"--base X"等显式指定 → 改用 `origin/X`
-   - `git fetch origin <base>` 拉取最新引用
-   - `git status --porcelain` 必须为空；非空则停下，提示用户 stash / commit / 丢弃后重试，**不要在脏 worktree 上创建分支**
+   - 按 Rule 0 解析真实 base，用户指定的引用不擅自改成 `origin/X`
+   - 新任务需要最新远端基线时，在授权范围内 fetch；恢复 WIP 不强制更新基线
+   - 检查 `git status --porcelain` 并分类改动。共享/脏工作区采用独立 worktree 或临时 checkout；保留原目录。将本任务必要源码和计划纳入实际验证，不能只测干净旧版本
    - 记录当前所在分支 `<orig-branch>` 仅用于错误回滚提示，不作为 base
 2. 生成分支名：
    - 有 issue 编号：`fix-<issue-number>-<short-desc>`
    - 无 issue：`fix-<short-desc>`
-   - 标题转小写、特殊字符替换 `-`、≤30 字符、不含斜杠
-3. 向用户确认分支名（同时展示 base 分支，让用户有机会改）
-4. 创建：`git checkout -b <branch> origin/<base>`
-5. **分支已存在的处理**——必须向用户确认，**默认推荐"基于 origin/<base> 重建"**：
-   - **重建（默认推荐）**：`git branch -D <branch> && git checkout -b <branch> origin/<base>`。原分支 commit 会丢弃；用户若想保留请改用其它分支名
-   - **恢复 WIP**（仅当用户明确说"继续上次未完成的修复"）：`git checkout <branch>`，随后**必须执行 `git rebase origin/<base>`** 把它对齐到最新 base；rebase 失败则停下报告冲突，不要硬上
-   - **改名**：回到 4.2 重新生成
-6. **结束断言**：执行 `git rev-parse --abbrev-ref HEAD`，必须等于本轮选定的分支名；输出为字面值 `HEAD`（游离 HEAD 状态）也视为失败。任一不等则停止并报告，不进入 Step 5
+   - 遵守项目分支前缀与用户命名；没有约定时使用 `codex/fix-<short-desc>`
+3. 展示 base 和隔离位置；创建分支已获授权时按约定选名，不重复确认。未获命名分支授权时使用本地隔离 checkout 交付 diff，不把分支创建作为修复许可的替代
+4. 新命名分支在独立工作区从已确认 `<base-ref>` 创建；已授权继续 WIP 则复用核验后的任务工作区
+5. **分支已存在**：保留它，新任务选未占用名称；明确继续原任务则核对后恢复。用户若选择删除/重建或改写历史，仍必须明确批准具体分支和后果
+6. **结束检查**：核对路径和 HEAD/分支符合记录；临时 detached checkout 可用于隔离实施，发布时必须有明确目标分支。目标不符时先修正执行路径再继续
 
 ### 5. 执行修复
 
-> **前置 assert（来自 Rule 0）**：调用 `$code-auto` 前再次确认 `git rev-parse --abbrev-ref HEAD` = Step 4 创建的分支，且 `git status --porcelain` 为空。任一不满足 → 停止，回到 Step 4 重做，不要默默在错误的分支上跑 `$code-auto`。
+> **前置检查**：按 Rule 0 核对本任务工作区、基线和文件归属；plan/进度文件允许存在。不能自动清空工作树以通过检查。
 
 调用 `$code-auto` 并传入 `<plan-file-path>`。
 
-`$code-auto` 内部完成：phase 拆分、parallel 执行、commit、build/lint/format、（可选）submit MR。
+`$code-auto` 内部完成实施、审查和验证；委派、commit 和 MR 仅执行已授权部分。
 
 ### 6. 提交 MR（兜底）
 
-如果 `$code-auto` 未自动提交 MR，调用 `$mr-submit`，自动从 commit 提取 issue 引用生成 MR 标题。
+只有 MR 已获授权且门禁通过、尚未发布时才调用 `$mr-submit`；未授权则交付修复和验证结果，不自动创建 MR。
 
 ## Output
 
@@ -138,8 +141,8 @@ description: 基于 Issue 或问题描述自动修复：判定方案完备度 �
 
 ## Notes
 
-- 类型 2 的 issue 提交（B2 追加 comment / C 创建新 issue）保证修复方案有可追溯锚点
+- 本地计划提供可追溯依据；类型 2 的 issue 创建/追加 comment 仍以发布授权为前提
 - 类型 1 转 plan 文件时，`$code-auto` 仍会做 build/lint 验证，不要直接跳过
-- 判定模糊时倾向于走类型 2 + 用户确认，不要默默执行不完整方案
-- 一行 typo 这类极小修改也走 `$code-auto`；`$code-plan` 会产出极简单的 plan，不会浪费太多步骤
-- 输入是 plan 文件路径（Step 1 中"跳到 Step 4"）时也**不能**跳过 Step 4 的分支创建——只是跳过 Step 2/3 的方案准备，分支隔离规则照样生效
+- 输入分类不触发确认；实质业务取舍与明确的“先审方案”关卡仍需用户决定
+- typo 等范围明确的微小修复可直接编辑并做相称检查，无须制造 plan/issue；工作区保护和发布授权照常适用
+- 输入是 plan 文件路径时跳过方案准备，仍执行 Step 4 的工作区核对

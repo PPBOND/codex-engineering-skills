@@ -17,4 +17,3 @@ Example command shapes:
 ssh <vm> 'cmake --build <build-dir> --target <target> --parallel <jobs>'
 ssh <vm> 'ctest --test-dir <build-dir> -R <test-regex> --output-on-failure'
 ```
-
