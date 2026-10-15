@@ -4,3 +4,8 @@ Thumbs.db
 *.tmp
 .idea/
 .vscode/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+.venv/

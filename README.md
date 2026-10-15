@@ -1,7 +1,7 @@
 # Codex 工程 Skills
 
 这是一个面向软件工程、C++、分布式存储和研发流程的 Codex skill 集合。
-当前同步了 48 个用户级 skill，包含每个 skill 的 `SKILL.md`、可选的
+当前同步了 56 个用户级 skill，包含每个 skill 的 `SKILL.md`、可选的
 `agents/` 元数据、脚本、参考资料和资源文件。
 
 ## 目录结构
@@ -21,6 +21,10 @@ skills/
 ### 编码、审查与质量
 
 - `auto-fix`：从问题分析、实现到验证的完整修复流程。
+- `brooks-review`：从设计和可维护性角度审查代码改动。
+- `brooks-test`：检查测试质量、脆弱用例和覆盖盲区。
+- `brooks-health`：综合评估代码、架构、技术债和测试质量。
+- `brooks-sweep`：在授权范围内综合检查并修复代码问题。
 - `code-analyze`：分析调用链、控制流、状态机和风险路径。
 - `code-auto`：按计划或规格分阶段实现并验证代码。
 - `code-commit`：检查范围并创建聚焦、可追踪的 Git 提交。
@@ -40,6 +44,8 @@ skills/
 
 ### 设计、架构与文档
 
+- `brooks-audit`：分析模块依赖、分层及循环依赖。
+- `brooks-debt`：识别技术债并制定有依据的改进优先级。
 - `design-analysis`：结合需求、代码证据和约束完成详细设计。
 - `design-review`：交叉评审 design、SWDD、spec 和 PRD。
 - `design-to-spec`：将收敛后的设计转换为可直接执行的实现规格。
@@ -68,6 +74,7 @@ skills/
 
 - `clickhouse-io`：ClickHouse 查询、性能和数据工程实践。
 - `draw-layered-engineering-diagrams`：生成分层工程架构、I/O、存储和恢复图。
+- `draw-animated-architecture-diagrams`：生成可切换、可播放、可验证的架构与流程 HTML 图册。
 - `feishu-doc`：创建、编辑和发布飞书/Lark 云文档。
 - `jira`：读取和分析 Jira Issue、Filter、Board 或 JQL。
 - `jira-resolve`：根据 MR 信息评论并流转 Jira Issue。
@@ -77,6 +84,7 @@ skills/
 - `lark-wiki`：管理飞书知识空间、节点和成员。
 - `quarterly-report`：根据已授权活动生成季度工作总结。
 - `storyboard-from-markdown`：将长文档、设计材料转为故事板和 PDF。
+- `work-weak-report`：汇总指定周期内所有可访问会话，生成面向领导的图解式工作汇报；讲清具体交付物、改动、价值、状态及风险。
 
 ## 使用方式
 
@@ -105,15 +113,24 @@ Skill 只描述工作流，不包含账号密码、API 密钥、固定私有地�
 使用 Git、Issue、SSH、飞书、Jira、CI 或指标服务的 skill，需要调用方单独
 配置并认证对应工具。
 
+飞书系列还引用 `lark-sheets`、`lark-base`、`lark-whiteboard`、`lark-okr`、
+`lark-note` 和 `lark-markdown` 等可选配套技能；这些不在本次本机技能集合中。
+使用对应表格、Base、画板等跨类型功能前，应另行安装所需配套技能。
+上述跨技能链接是外部依赖，不代表本仓库已包含完整飞书工具套件。
+
 ## 发布前检查
 
 1. 每个 `skills/<name>/SKILL.md` 的 frontmatter `name` 与目录名一致。
-2. 参考资料、脚本和资源路径均存在。
+2. 包内参考资料、脚本和资源路径均存在；跨技能依赖按上节另行准备。
 3. 已扫描凭据、密钥、私有地址和本机路径，未发现实际凭据。
 4. 对有副作用的 skill，先在隔离环境完成最小验证。
 5. 修改 skill 后启动新的 Codex 任务，确认发现和触发行为正常。
 
 ## 同步说明
 
-本仓库用于保存可复用的用户级工程 skills。系统内置的 `.system` skill 不在
-本同步范围内；`__pycache__` 等运行时缓存也不纳入版本控制。
+本仓库用于保存可复用的用户级工程 skills。本次同步日期为 2026-10-15，来源为
+本机个人 skills 目录。系统内置 `.system` 技能、插件安装缓存与 `__pycache__`
+等运行时文件不纳入同步。发布副本使用通用连接配置，个人主机地址及密钥路径
+保留在本机。旧技能的 frontmatter 补齐或规范化后发布，不修改本机安装内容。
+架构绘图技能中的项目专用参考图在公开副本中替换为随包教学配置生成的通用示例；
+原始图保留在本机，模板、交互和验证能力保持不变。

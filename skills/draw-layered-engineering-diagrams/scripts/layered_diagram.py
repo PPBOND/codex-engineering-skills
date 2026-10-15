@@ -192,7 +192,7 @@ def demo(output: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Reusable primitives for layered engineering diagrams")
-    parser.add_argument("--demo", action="store_true", help="render a reference demo")
+    parser.add_argument("--demo", action="store_true", help="render a primitives smoke test")
     parser.add_argument("--output", type=Path, default=Path("layered-diagram-demo.png"))
     args = parser.parse_args()
     if not args.demo:

@@ -1,0 +1,922 @@
+{
+  "title": "存储服务 · 动态架构示例",
+  "subtitle": "架构 / 写入 / 查询",
+  "sourceNote": "教学示例：结构与状态用于说明流程，不代表任何具体实现。",
+  "pages": [
+    {
+      "id": "overview",
+      "short": "整体架构",
+      "title": "示例存储服务：请求、状态与持久化",
+      "subtitle": "教学模型 / 展示嵌套对象与侧边维护关系",
+      "overview": true,
+      "example": true,
+      "summary": "模块归属由嵌套边界表达；箭头连接请求、状态与 I/O。",
+      "note": "教学示例；光点表示路径方向，条件分支由标签区分。",
+      "groups": [
+        {
+          "id": "caller",
+          "title": "调用方 / 公开入口",
+          "x": 100,
+          "y": 175,
+          "w": 1800,
+          "h": 180,
+          "color": "gray"
+        },
+        {
+          "id": "owner",
+          "title": "示例存储服务 / 执行上下文",
+          "x": 100,
+          "y": 370,
+          "w": 1800,
+          "h": 640,
+          "color": "green",
+          "titleX": 950
+        },
+        {
+          "id": "execution",
+          "title": "数据面",
+          "x": 125,
+          "y": 430,
+          "w": 1250,
+          "h": 540,
+          "color": "blue",
+          "parent": "owner"
+        },
+        {
+          "id": "control",
+          "title": "维护流程",
+          "x": 1450,
+          "y": 430,
+          "w": 420,
+          "h": 370,
+          "color": "purple",
+          "parent": "owner"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "api",
+          "title": "写入 / 查询 API",
+          "x": 140,
+          "y": 245,
+          "w": 1720,
+          "h": 65,
+          "color": "gray",
+          "lines": [],
+          "parent": "caller"
+        },
+        {
+          "id": "request",
+          "title": "请求调度",
+          "x": 150,
+          "y": 500,
+          "w": 360,
+          "h": 120,
+          "color": "blue",
+          "lines": [],
+          "parent": "execution",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "输入",
+                "key / value / callback"
+              ],
+              [
+                "请求",
+                "写入或查询"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "state",
+          "title": "请求上下文",
+          "x": 575,
+          "y": 500,
+          "w": 360,
+          "h": 120,
+          "color": "green",
+          "lines": [],
+          "parent": "execution",
+          "fields": [
+            "key / value",
+            "callback"
+          ]
+        },
+        {
+          "id": "record",
+          "title": "记录 buffer",
+          "x": 1000,
+          "y": 500,
+          "w": 350,
+          "h": 120,
+          "color": "orange",
+          "lines": [],
+          "parent": "execution",
+          "widget": {
+            "kind": "strip",
+            "cells": [
+              {
+                "label": "Header",
+                "weight": 1,
+                "color": "blue"
+              },
+              {
+                "label": "Key",
+                "weight": 1,
+                "color": "blue"
+              },
+              {
+                "label": "Value",
+                "weight": 2,
+                "color": "orange"
+              }
+            ]
+          }
+        },
+        {
+          "id": "io",
+          "title": "I/O 接口",
+          "x": 150,
+          "y": 750,
+          "w": 1200,
+          "h": 100,
+          "color": "orange",
+          "lines": [],
+          "parent": "execution",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "动作",
+                "read / append"
+              ],
+              [
+                "完成",
+                "状态 + 结果"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "maintenance",
+          "title": "后台任务",
+          "x": 1470,
+          "y": 500,
+          "w": 380,
+          "h": 110,
+          "color": "purple",
+          "lines": [
+            "选择需要维护的范围",
+            "构造待提交状态"
+          ],
+          "parent": "control"
+        },
+        {
+          "id": "publish",
+          "title": "后台提交",
+          "x": 1470,
+          "y": 680,
+          "w": 380,
+          "h": 80,
+          "color": "purple",
+          "lines": [
+            "候选结果交给记录编码"
+          ],
+          "parent": "control"
+        },
+        {
+          "id": "storage",
+          "title": "持久化对象",
+          "x": 150,
+          "y": 1090,
+          "w": 1720,
+          "h": 100,
+          "color": "orange",
+          "lines": [],
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "内容",
+                "记录文件 / 索引与元数据"
+              ],
+              [
+                "确认",
+                "I/O 完成后交付结果"
+              ]
+            ]
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "api",
+          "to": "request",
+          "points": [
+            [
+              330,
+              310
+            ],
+            [
+              330,
+              500
+            ]
+          ],
+          "color": "blue",
+          "step": 0,
+          "label": [
+            330,
+            310
+          ],
+          "badge": false,
+          "dashed": false
+        },
+        {
+          "from": "request",
+          "to": "state",
+          "points": [
+            [
+              510,
+              560
+            ],
+            [
+              575,
+              560
+            ]
+          ],
+          "color": "blue",
+          "step": 0,
+          "label": [
+            510,
+            560
+          ],
+          "badge": false,
+          "dashed": false
+        },
+        {
+          "from": "state",
+          "to": "record",
+          "points": [
+            [
+              935,
+              560
+            ],
+            [
+              1000,
+              560
+            ]
+          ],
+          "color": "green",
+          "step": 0,
+          "label": [
+            935,
+            560
+          ],
+          "badge": false,
+          "dashed": false
+        },
+        {
+          "from": "record",
+          "to": "io",
+          "points": [
+            [
+              1175,
+              620
+            ],
+            [
+              1175,
+              750
+            ]
+          ],
+          "color": "orange",
+          "step": 0,
+          "label": [
+            1175,
+            620
+          ],
+          "badge": false,
+          "dashed": false
+        },
+        {
+          "from": "io",
+          "to": "storage",
+          "points": [
+            [
+              775,
+              850
+            ],
+            [
+              775,
+              1090
+            ]
+          ],
+          "color": "orange",
+          "step": 0,
+          "label": [
+            775,
+            850
+          ],
+          "badge": false,
+          "dashed": false
+        },
+        {
+          "from": "publish",
+          "to": "record",
+          "points": [
+            [
+              1470,
+              720
+            ],
+            [
+              1410,
+              720
+            ],
+            [
+              1410,
+              590
+            ],
+            [
+              1350,
+              590
+            ]
+          ],
+          "color": "purple",
+          "step": 0,
+          "label": [
+            1410,
+            720
+          ],
+          "badge": false,
+          "dashed": true
+        }
+      ],
+      "steps": []
+    },
+    {
+      "id": "write",
+      "short": "写入流程",
+      "title": "写入：编码、持久化与完成",
+      "subtitle": "展示一条正常写入路径；每个步骤号仅出现一次",
+      "overview": false,
+      "example": true,
+      "summary": "示例成功路径：接纳 → 编码 → 持久化并发布 → callback。",
+      "note": "教学示例；光点表示路径方向，条件分支由标签区分。",
+      "groups": [
+        {
+          "id": "caller",
+          "title": "调用方",
+          "x": 100,
+          "y": 175,
+          "w": 1800,
+          "h": 210,
+          "color": "gray"
+        },
+        {
+          "id": "engine",
+          "title": "示例引擎 / 写入处理",
+          "x": 100,
+          "y": 440,
+          "w": 1800,
+          "h": 740,
+          "color": "blue"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "input",
+          "title": "业务写请求",
+          "x": 140,
+          "y": 240,
+          "w": 1720,
+          "h": 100,
+          "color": "blue",
+          "lines": [],
+          "parent": "caller",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "内容",
+                "key=K / value=V"
+              ],
+              [
+                "通知",
+                "callback + context"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "writer",
+          "title": "接管请求",
+          "x": 140,
+          "y": 530,
+          "w": 700,
+          "h": 145,
+          "color": "blue",
+          "lines": [],
+          "parent": "engine",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "拥有",
+                "key / value"
+              ],
+              [
+                "状态",
+                "请求已接纳"
+              ],
+              [
+                "下一步",
+                "构造记录布局"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "buffer",
+          "title": "编码记录",
+          "x": 1040,
+          "y": 530,
+          "w": 700,
+          "h": 145,
+          "color": "orange",
+          "lines": [],
+          "parent": "engine",
+          "widget": {
+            "kind": "strip",
+            "cells": [
+              {
+                "label": "Header",
+                "weight": 1,
+                "color": "blue"
+              },
+              {
+                "label": "Key K",
+                "weight": 1,
+                "color": "blue"
+              },
+              {
+                "label": "Value V",
+                "weight": 3,
+                "color": "orange"
+              }
+            ]
+          }
+        },
+        {
+          "id": "append",
+          "title": "持久化完成",
+          "x": 1040,
+          "y": 860,
+          "w": 700,
+          "h": 145,
+          "color": "orange",
+          "lines": [],
+          "parent": "engine",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "I/O",
+                "append 已确认"
+              ],
+              [
+                "发布",
+                "内存索引指向新位置"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "done",
+          "title": "交付 callback",
+          "x": 140,
+          "y": 860,
+          "w": 700,
+          "h": 145,
+          "color": "green",
+          "lines": [],
+          "parent": "engine",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "结果",
+                "ret=0"
+              ],
+              [
+                "生命周期",
+                "完成通知后释放请求"
+              ]
+            ]
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "input",
+          "to": "writer",
+          "points": [
+            [
+              490,
+              340
+            ],
+            [
+              490,
+              530
+            ]
+          ],
+          "color": "blue",
+          "step": 1,
+          "label": [
+            490,
+            411
+          ],
+          "badge": true,
+          "dashed": false
+        },
+        {
+          "from": "writer",
+          "to": "buffer",
+          "points": [
+            [
+              840,
+              602.5
+            ],
+            [
+              1040,
+              602.5
+            ]
+          ],
+          "color": "blue",
+          "step": 2,
+          "label": [
+            940,
+            602.5
+          ],
+          "badge": true,
+          "dashed": false
+        },
+        {
+          "from": "buffer",
+          "to": "append",
+          "points": [
+            [
+              1390,
+              675
+            ],
+            [
+              1390,
+              860
+            ]
+          ],
+          "color": "orange",
+          "step": 3,
+          "label": [
+            1390,
+            767.5
+          ],
+          "badge": true,
+          "dashed": false
+        },
+        {
+          "from": "append",
+          "to": "done",
+          "points": [
+            [
+              1040,
+              932.5
+            ],
+            [
+              840,
+              932.5
+            ]
+          ],
+          "color": "green",
+          "step": 4,
+          "label": [
+            940,
+            932.5
+          ],
+          "badge": true,
+          "dashed": false
+        }
+      ],
+      "steps": [
+        {
+          "who": "入口",
+          "m": "接管写入所需的数据和完成通知。",
+          "g": "输入在请求生命周期内有效。"
+        },
+        {
+          "who": "编码",
+          "m": "将 key/value 写入记录 buffer。",
+          "g": "提交 I/O 时正文已经就绪。"
+        },
+        {
+          "who": "I/O",
+          "m": "追加记录，成功后发布新位置。",
+          "g": "持久化与可见性顺序明确。"
+        },
+        {
+          "who": "完成",
+          "m": "把本次终态交给调用方。",
+          "g": "完成后释放请求。"
+        }
+      ]
+    },
+    {
+      "id": "read",
+      "short": "命中与缺页",
+      "title": "读取：直接命中与后端加载",
+      "subtitle": "提前返回靠近判断点；缺页路径向下推进",
+      "overview": false,
+      "example": true,
+      "summary": "命中与缺页是两个分支；两者最终都交付查询结果。",
+      "note": "教学示例；光点表示路径方向，条件分支由标签区分。",
+      "groups": [
+        {
+          "id": "caller",
+          "title": "查询输入",
+          "x": 100,
+          "y": 175,
+          "w": 1800,
+          "h": 210,
+          "color": "gray"
+        },
+        {
+          "id": "engine",
+          "title": "查询上下文",
+          "x": 100,
+          "y": 420,
+          "w": 1800,
+          "h": 730,
+          "color": "green",
+          "titleX": 950
+        }
+      ],
+      "nodes": [
+        {
+          "id": "input",
+          "title": "范围查询",
+          "x": 140,
+          "y": 240,
+          "w": 1720,
+          "h": 100,
+          "color": "blue",
+          "lines": [],
+          "parent": "caller",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "范围",
+                "[0,16) / 示意单位"
+              ],
+              [
+                "结果",
+                "查询状态与结果列表"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "cache",
+          "title": "检查缓存覆盖",
+          "x": 140,
+          "y": 500,
+          "w": 600,
+          "h": 145,
+          "color": "green",
+          "lines": [],
+          "parent": "engine",
+          "widget": {
+            "kind": "ranges",
+            "axis": [
+              0,
+              4,
+              8,
+              12,
+              16
+            ],
+            "rows": [
+              {
+                "label": "范围",
+                "cells": [
+                  {
+                    "label": "已覆盖",
+                    "weight": 12,
+                    "color": "green"
+                  },
+                  {
+                    "label": "未决",
+                    "weight": 4,
+                    "color": "gray"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "hit",
+          "title": "全命中 → 提前返回",
+          "x": 1250,
+          "y": 500,
+          "w": 600,
+          "h": 145,
+          "color": "green",
+          "lines": [],
+          "parent": "engine",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "条件",
+                "所需范围已全部覆盖"
+              ],
+              [
+                "结果",
+                "直接交付查询结果"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "load",
+          "title": "后端读取与回填",
+          "x": 140,
+          "y": 840,
+          "w": 600,
+          "h": 145,
+          "color": "blue",
+          "lines": [],
+          "parent": "engine",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "输入",
+                "缺失范围"
+              ],
+              [
+                "回填",
+                "解码后合并内存状态"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "done",
+          "title": "交付查询结果",
+          "x": 1250,
+          "y": 840,
+          "w": 600,
+          "h": 145,
+          "color": "green",
+          "lines": [],
+          "parent": "engine",
+          "widget": {
+            "kind": "table",
+            "rows": [
+              [
+                "完成",
+                "所需基线已经就绪"
+              ],
+              [
+                "结果",
+                "状态码 + 结果列表"
+              ]
+            ]
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "input",
+          "to": "cache",
+          "points": [
+            [
+              440,
+              340
+            ],
+            [
+              440,
+              500
+            ]
+          ],
+          "color": "green",
+          "step": 1,
+          "label": [
+            440,
+            400
+          ],
+          "badge": true,
+          "dashed": false
+        },
+        {
+          "from": "cache",
+          "to": "hit",
+          "points": [
+            [
+              740,
+              572.5
+            ],
+            [
+              1250,
+              572.5
+            ]
+          ],
+          "color": "green",
+          "step": 2,
+          "label": [
+            995,
+            572.5
+          ],
+          "badge": true,
+          "dashed": true,
+          "caption": "全命中",
+          "captionAt": [
+            995,
+            540
+          ]
+        },
+        {
+          "from": "cache",
+          "to": "load",
+          "points": [
+            [
+              440,
+              645
+            ],
+            [
+              440,
+              840
+            ]
+          ],
+          "color": "blue",
+          "step": 3,
+          "label": [
+            440,
+            742.5
+          ],
+          "badge": true,
+          "dashed": false,
+          "caption": "存在缺页",
+          "captionAt": [
+            515,
+            742.5
+          ]
+        },
+        {
+          "from": "load",
+          "to": "done",
+          "points": [
+            [
+              740,
+              912.5
+            ],
+            [
+              1250,
+              912.5
+            ]
+          ],
+          "color": "green",
+          "step": 4,
+          "label": [
+            995,
+            912.5
+          ],
+          "badge": true,
+          "dashed": false
+        }
+      ],
+      "steps": [
+        {
+          "who": "查询",
+          "m": "确认请求范围与已有覆盖。",
+          "g": "得到直接命中或缺页的分支条件。"
+        },
+        {
+          "who": "提前返回",
+          "m": "全部命中时直接生成结果。",
+          "g": "当前请求不进入后端加载路径。"
+        },
+        {
+          "who": "缺页加载",
+          "m": "读取所需基线并回填。",
+          "g": "完成后继续当前查询。"
+        },
+        {
+          "who": "结果",
+          "m": "根据已就绪的数据生成结果列表。",
+          "g": "交付状态与结果。"
+        }
+      ]
+    }
+  ]
+}

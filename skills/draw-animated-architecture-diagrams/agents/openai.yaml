@@ -1,0 +1,4 @@
+interface:
+  display_name: "架构与流程动态图"
+  short_description: "生成可手动切换、持续播放且层次清晰的架构与 I/O 流程 HTML 图册"
+  default_prompt: "使用 $draw-animated-architecture-diagrams，基于当前源码绘制包含整体架构和核心流程的交互式 HTML 动态图册。"

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Brooks 扫描修复"
+  short_description: "Scan and fix code within the authorized scope"

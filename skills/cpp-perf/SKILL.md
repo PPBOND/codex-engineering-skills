@@ -11,7 +11,18 @@ description: >
 
 # C++ Performance Optimization (Codex)
 
-Use this skill only for performance-focused C++ work. Read the detailed pipeline in [`cpp-perf.md`](cpp-perf.md) and load only the matching knowledge patterns, platform profile, and templates from this skill directory.
+Use this skill only for performance-focused C++ work. Start with the value screen below. Load matching sections of [`cpp-perf.md`](cpp-perf.md), knowledge patterns, profiles, and templates only after they are needed for the current stage; do not read or execute the whole pipeline by default.
+
+## Value-first workflow
+
+1. **Screen before proposing experiments.** Establish actual input sizes, call frequency and hotspot share from code and existing evidence. Estimate the end-to-end saving, including construction, update and reclamation costs. A component occupying 1% of total time and becoming 10x faster saves only about 0.9% of total time. Also consider concrete tail-latency, I/O and resource targets; mean CPU share alone does not describe them.
+2. **Reject low-value work early.** If the upper bound is marginal for the user's goal, deliver that conclusion instead of building candidates or a large benchmark matrix. If hotspot evidence is missing, use one bounded, inexpensive observation to decide whether further work is justified. Theory screens proposals; it is not a measured speedup.
+3. **Pilot, then promote.** Unless the user specifies otherwise, start with one baseline, one minimal candidate and 1–2 representative cases, reusing existing harnesses. Only a convincing improvement relevant to the overall goal justifies broad performance coverage. Complete explicitly requested comparisons and required correctness tests; these internal stages do not add approval gates.
+4. **Stop inconclusive tuning.** Before a targeted rerun, state the hypothesis, the distinguishing measurement and the exit condition. For small deltas/noise, default to at most one such rerun; stop if evidence remains inconclusive. Do not keep changing layouts, adding variants or rerunning full matrices to obtain a favorable result. Preserve failures and neutral results.
+
+Fix fairness conditions before the first run: source snapshot, compiler/options, data distribution, paths, cache state, concurrency and machine load. Keep fixture preparation and correctness checks outside measured work. External edits do not automatically restart the matrix; preserve the comparison snapshot and validate only affected integration paths, without claiming old evidence covers changed code.
+
+Keep token use proportional to the decision: read only relevant functions and skill sections, summarize/filter large tool results before returning them, and reuse prior evidence. The detailed pipeline's broad discovery, sampling and adaptive-repeat recipes are conditional references subordinate to this workflow and the user's requested limits.
 
 ## Karpathy Scope and Goal Guardrail
 

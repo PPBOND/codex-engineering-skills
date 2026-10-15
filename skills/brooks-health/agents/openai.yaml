@@ -1,0 +1,3 @@
+interface:
+  display_name: "Brooks 仓库健康"
+  short_description: "Assess codebase quality across four dimensions"

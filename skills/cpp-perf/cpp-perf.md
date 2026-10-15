@@ -554,7 +554,7 @@ Use interactive platform setup only when the target remains materially ambiguous
 2. "What cross-compiler do you use? (e.g., aarch64-linux-gnu-g++, or 'local' if compiling natively)"
 3. "What compiler flags should I use? (e.g., -O2 -march=armv8.2-a)"
 4. "Do you have a sysroot path for cross-compilation? (optional, e.g., /opt/arm-sysroot)"
-5. "What is the SSH address of your target board? (e.g., user@192.168.1.100)"
+5. "What is the SSH address of your target board? (e.g., user@target-host)"
    - Also ask for port if non-standard
    - Ask about SSH key path if not using ssh-agent
    - Ask about jump host if needed

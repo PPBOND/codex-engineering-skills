@@ -5,25 +5,25 @@ description: Build, test, lint, debug, or run a project on a remote VM when the 
 
 # Remote VM Workflow
 
-## Connection
+## Connection Configuration
 
-The user or execution environment must provide the SSH target, user and
-authentication method. Never embed a host address, username, password, token or
-private-key path in this skill. Prefer key-based authentication and do not put
-credentials on a process command line. If the target or credential is missing,
-stop and ask for it rather than guessing or falling back to a password.
+Resolve the SSH target, user, and key from the user's request or authorized local
+SSH configuration. This published skill does not provide a default server.
+Prefer key-based authentication. Do not put credentials on a process command line.
+If the configured key is unavailable or rejected, ask for an approved connection
+method rather than silently falling back to password authentication.
 
 ## Inputs
 
-- SSH target, user and credentials supplied by the user or environment;
+- SSH target and authentication method;
 - remote repository or worktree path;
 - requested build/test/run command;
 - branch or commit;
 - required environment or container context.
 
 Read these from user input, repository documentation, or environment configuration.
-Never embed host addresses, passwords, package remotes, or repository paths in the
-skill. Never expose credentials in output.
+Do not embed host addresses, passwords, private-key locations, or private repository
+paths in the published skill. Never expose credentials in output.
 
 ## Workflow
 
@@ -43,8 +43,15 @@ remote builds; shared-service and system changes keep the explicit Safety gates.
 
 ## Worktrees
 
-Use a separate worktree when the remote checkout is shared or dirty. Resolve all
-paths before creation or cleanup, and never delete a worktree without explicit scope.
+Prefer reusing an existing idle isolated directory or worktree. Before reuse, check
+its resolved path, Git status, running build/test commands and process working
+directories, plus any task ownership markers. A dated directory name alone does not
+prove it is unused. Preserve unrelated source changes and existing result artifacts.
+
+Use a separate worktree when the remote checkout is shared or dirty. Create a new
+isolated directory only when no suitable idle one exists or the user requests one.
+Resolve all paths before creation or cleanup, and never delete a worktree without
+explicit scope.
 
 Generic pattern:
 

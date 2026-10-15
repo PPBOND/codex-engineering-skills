@@ -1,0 +1,3 @@
+interface:
+  display_name: "Brooks 架构审计"
+  short_description: "Audit module boundaries and architecture decay"

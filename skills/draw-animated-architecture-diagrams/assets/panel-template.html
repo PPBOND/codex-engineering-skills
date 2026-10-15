@@ -1,0 +1,94 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title><!--PANEL_TITLE--></title>
+<style>
+:root{--ink:#16191d;--muted:#66727d;--blue:#1976c5;--border:#d8dee5;font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;color:var(--ink);background:#f6f7f9}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0}.toolbar{position:sticky;top:0;z-index:10;background:white;border-bottom:1px solid var(--border)}.toolbar>div{max-width:1640px;margin:auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-size:21px;font-weight:700;color:#0b5d9a}.brand small{font-size:13px;font-weight:400;color:var(--muted);margin-left:12px}nav{display:flex;align-items:center;gap:18px}button{font:inherit;border:1px solid var(--border);background:#fff;border-radius:5px;padding:9px 15px;color:#0b5d9a;cursor:pointer;white-space:nowrap}button:hover:enabled{background:#e5f2fc;border-color:#1976c5}button:disabled{opacity:.35;cursor:default}button:focus-visible{outline:3px solid #1976c5;outline-offset:3px}#page-status{min-width:170px;text-align:center;font-size:14px;line-height:1.65}#page-status strong{display:block}#page-status small{font-size:11px;color:var(--muted)}main{max-width:1640px;margin:auto;padding:22px 24px}.diagram{overflow:auto;background:white}svg{width:100%;height:auto;display:block}svg text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif}.edge{fill:none;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}.edge.dashed{stroke-dasharray:11 8}.group-label{font-size:26px;font-weight:700}.node-title{font-size:26px;font-weight:700}.node-line{font-size:22px}.field-label{font-size:20px}.edge-number{font-size:24px;font-weight:700;text-anchor:middle;dominant-baseline:central}.edge-caption{font-size:20px;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:6;stroke-linejoin:round}.packet{pointer-events:none}.steps-panel{margin-top:18px;background:white;border:1px solid var(--border);border-radius:8px;padding:22px 26px}.steps-panel h2{font-size:19px;margin:0 0 15px}.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 25px;list-style:none;margin:0;padding:0}.step{display:grid;grid-template-columns:28px 1fr;gap:11px}.step-num{width:27px;height:27px;text-align:center;line-height:25px;border:1px solid #1976c5;border-radius:50%;color:#0b5d9a;font-weight:700}.step h3{font-size:15px;margin:3px 0 7px}.step p{font-size:13px;line-height:1.8;margin:0;color:#4f5c67}.step .outcome{color:#28732e}.note{font-size:13px;line-height:1.8;margin-top:18px;border-top:1px solid #e5e9ee;padding-top:14px;color:#6d278f}.footer{color:#87939d;text-align:center;font-size:11px;line-height:1.8;padding:4px 24px 20px}.footer a{color:inherit}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:850px){.toolbar>div{flex-wrap:wrap;justify-content:center;padding:14px}.brand small{display:none}nav{width:100%;justify-content:space-between;gap:6px}#page-status{min-width:0}main{padding:14px 8px}.diagram svg{min-width:1000px}.steps{grid-template-columns:1fr}.steps-panel{padding:18px}.footer{padding:8px 14px}}
+.toolbar{position:sticky;top:0;z-index:10}.edge{stroke-width:2}.group-label{font-size:24px}.node-title{font-size:22px}.node-line{font-size:17px}.field-label{font-size:17px}.edge-number{font-size:18px;fill:white}.edge-caption{font-size:17px}
+</style></head><body>
+<header class="toolbar"><div><span class="brand"><span id="brand-title"></span><small id="brand-subtitle"></small></span><nav aria-label="架构图切换"><button id="previous-flow" disabled>← 上一张</button><div id="page-status" role="status" aria-live="polite" aria-atomic="true"><strong id="flow-name"></strong><small>当前图持续播放 · 点击切换</small></div><button id="next-flow">下一张 →</button></nav></div></header>
+<main><h1 id="page-title" class="sr-only"></h1><section class="diagram" aria-label="分层工程图"><svg id="graph" role="img"></svg></section><aside id="details" class="steps-panel" aria-label="当前流程步骤"></aside></main>
+<footer class="footer"><span id="source-note"></span> 光点仅示意流程方向。<br>动画方法：<a href="https://github.com/ythx-101/live-panel-skill">live-panel</a> · <a href="https://x.com/thedelost/status/2105398038026195279">@thedelost</a></footer>
+<!--LIVE_CONFIG-->
+<script>
+(() => {
+  'use strict';
+  const config=JSON.parse(document.getElementById('live-config').textContent);
+  const graph=document.getElementById('graph'),previous=document.getElementById('previous-flow'),next=document.getElementById('next-flow');
+  const colors={blue:['#e5f2fc','#1976c5','#0b5d9a'],green:['#eaf6e7','#3d9140','#28732e'],orange:['#fff1dc','#ef7d00','#b85b00'],purple:['#f3e6f7','#8635b5','#6d278f'],gray:['#f1f3f5','#7e8b98','#4f5c67']};
+  const escape=text=>String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  document.title=config.title;
+  document.getElementById('brand-title').textContent=config.title;
+  document.getElementById('brand-subtitle').textContent=config.subtitle;
+  document.getElementById('source-note').textContent=config.sourceNote;
+  let selected=0,start=0,packets=[];
+  // Actual data shapes: indexed rows, contiguous record slots and logical ranges.
+  function widgetMarkup(node){
+    const widget=node.widget,w=node.w-28,h=node.h-57;
+    if(widget.kind==='table'){
+      const height=Math.min(34,h/widget.rows.length),left=w*.4;
+      return `<g transform="translate(14 44)">${widget.rows.map(([key,value],i)=>`<rect x="0" y="${i*height}" width="${w}" height="${height}" fill="white" stroke="#cbd5df"/><rect x="0" y="${i*height}" width="${left}" height="${height}" fill="#f1f3f5" stroke="#cbd5df"/><text x="${left/2}" y="${(i+.5)*height+5}" text-anchor="middle" font-size="16" fill="#4f5c67">${escape(key)}</text><text x="${left+(w-left)/2}" y="${(i+.5)*height+5}" text-anchor="middle" font-size="16">${escape(value)}</text>`).join('')}</g>`;
+    }
+    const rows=widget.rows||[{label:'',cells:widget.cells}],labelWidth=widget.kind==='ranges'?50:0;
+    const height=widget.kind==='ranges'?Math.min(36,(h-20)/rows.length):Math.min(42,h);
+    const content=rows.map((row,index)=>{
+      let x=labelWidth;const y=index*(height+3),total=row.cells.reduce((sum,c)=>sum+c.weight,0);
+      const label=row.label?`<text x="0" y="${y+height/2+5}" font-size="16" fill="#4f5c67">${escape(row.label)}</text>`:'';
+      return label+row.cells.map(c=>{
+        const width=(w-labelWidth)*c.weight/total,[fill,border,ink]=colors[c.color];
+        const result=`<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${fill}" stroke="${border}"/><text x="${x+width/2}" y="${y+height/2+5}" text-anchor="middle" font-size="${width<105?14:16}" fill="${ink}">${escape(c.label)}</text>${c.crossed?`<path d="M${x+5} ${y+height-5}L${x+width-5} ${y+5}" stroke="#7e8b98" stroke-width="2"/>`:''}`;
+        x+=width;return result;
+      }).join('');
+    }).join('');
+    const axis=widget.kind==='ranges'?widget.axis.map(t=>`<text x="${labelWidth+(w-labelWidth)*(t-widget.axis[0])/(widget.axis.at(-1)-widget.axis[0])}" y="${rows.length*(height+3)+14}" text-anchor="middle" font-size="13" fill="#66727d">${t}</text>`).join(''):'';
+    return `<g transform="translate(14 44)">${content}${axis}</g>`;
+  }
+  function nodeMarkup(node){
+    const [fill,border,ink]=colors[node.color],compact=node.h<80;
+    const titleY=compact?node.h/2+7:31;
+    const fields=node.fields||[],slotWidth=(node.w-28)/fields.length;
+    return `<g class="node" data-node="${node.id}" transform="translate(${node.x} ${node.y})"><rect width="${node.w}" height="${node.h}" rx="6" fill="${fill}" stroke="${border}" stroke-width="1.5"/><text class="node-title" style="font-size:${node.titleSize||22}px" x="${compact?node.w/2:14}" y="${titleY}" text-anchor="${compact?'middle':'start'}" fill="${ink}">${escape(node.title)}</text>${node.widget?widgetMarkup(node):node.lines.filter(Boolean).map((line,i)=>`<text class="node-line" style="font-size:${node.bodySize||17}px" x="14" y="${55+i*22}" fill="#16191d">${escape(line)}</text>`).join('')}${fields.map((field,i)=>`<g class="field"><rect x="${14+i*slotWidth}" y="${node.h-41}" width="${slotWidth}" height="27" fill="#fff" stroke="${border}"/><text class="field-label" x="${14+(i+.5)*slotWidth}" y="${node.h-22}" text-anchor="middle" fill="${ink}">${escape(field)}</text></g>`).join('')}</g>`;
+  }
+  function renderGraph(page){
+    graph.setAttribute('viewBox','0 0 2000 1400');graph.setAttribute('aria-label',page.title+'；'+page.subtitle);
+    const legends=[['请求','blue',false],['索引 / 完成','green',false],['持久化','orange',false],['条件 / 控制 / 返回','purple',true]];
+    graph.innerHTML=`<defs>${Object.entries(colors).map(([name,c])=>`<marker id="arrow-${name}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="${c[1]}"/></marker>`).join('')}</defs>
+    <rect x="24" y="18" width="1952" height="1364" rx="30" fill="#fff" stroke="#d8dee5" stroke-width="2"/>
+    <text x="1000" y="80" text-anchor="middle" font-size="38" font-weight="700">${escape(page.title)}</text><text x="1000" y="120" text-anchor="middle" font-size="21" fill="#66727d">${escape(page.subtitle)}</text><path d="M70 143H1930" stroke="#e5e9ee" stroke-width="2"/>
+    ${page.groups.map(g=>`<g class="group"><rect x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" rx="8" fill="${g.fill||(g.parent?'#ffffff':colors[g.color][0])}" stroke="${colors[g.color][1]}" stroke-width="2"/><text class="group-label" x="${g.titleX||g.x+18}" y="${g.y+31}" fill="#16191d">${escape(g.title)}</text></g>`).join('')}
+    ${page.edges.map((edge,i)=>`<path id="edge-${i}" class="edge ${edge.dashed?'dashed':''}" data-step="${edge.step||''}" d="M${edge.points.map(p=>p.join(' ')).join(' L')}" stroke="${colors[edge.color][1]}" marker-end="url(#arrow-${edge.color})"/>`).join('')}
+    ${page.nodes.map(nodeMarkup).join('')}
+    ${page.edges.filter(e=>e.badge).map(e=>`<g class="edge-badge" data-step="${e.step}" transform="translate(${e.label.join(' ')})"><circle r="15" fill="#28732e"/><text class="edge-number">${e.step}</text></g>`).join('')}
+    ${page.edges.filter(e=>e.caption).map(e=>`<text class="edge-caption" x="${e.captionAt[0]}" y="${e.captionAt[1]}" fill="#4f5c67">${escape(e.caption)}</text>`).join('')}
+    <rect x="70" y="1280" width="1860" height="82" rx="10" fill="#f6f7f9" stroke="#d8dee5"/>
+    ${legends.map(([title,color,dashed],i)=>`<path d="M${100+i*260} 1302h60" stroke="${colors[color][1]}" stroke-width="4" ${dashed?'stroke-dasharray="10 7"':''}/><text x="${176+i*260}" y="1309" font-size="21">${title}</text>`).join('')}
+    <text x="100" y="1346" font-size="22" fill="#28732e">${escape(page.summary)}</text>${page.example?'<text x="1330" y="1309" font-size="18" fill="#66727d">图中符号值与区间为示例</text>':''}`;
+    const before=graph.querySelector('.node');
+    packets=page.edges.map((edge,i)=>{
+      const path=document.getElementById('edge-'+i),dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('r',5);dot.setAttribute('class','packet');dot.setAttribute('fill',colors[edge.color][1]);graph.insertBefore(dot,before);
+      return {path,dot,length:path.getTotalLength(),phase:edge.step||i};
+    });
+  }
+  // Page selection owns all text. Animation changes only packet coordinates.
+  function selectPage(index){
+    selected=index;const page=config.pages[index],details=document.getElementById('details');
+    document.getElementById('flow-name').textContent=`${index+1} / ${config.pages.length} · ${page.short}`;
+    document.getElementById('page-title').textContent=page.title;previous.disabled=index===0;next.disabled=index===config.pages.length-1;
+    details.hidden=page.overview;details.innerHTML=page.overview?'':`<h2>核心顺序 · 编号对应图中箭头</h2><ol class="steps">${page.steps.map((s,i)=>`<li class="step" data-step="${i+1}"><span class="step-num">${i+1}</span><div><h3>${escape(s.who)}</h3><p>${escape(s.m)}</p><p class="outcome">${escape(s.g)}</p></div></li>`).join('')}</ol><div class="note">${escape(page.note)}</div>`;
+    renderGraph(page);start=performance.now();window.seek(0);window.scrollTo(0,0);
+  }
+  window.seek=time=>{packets.forEach(p=>{const q=p.path.getPointAtLength(((time/4+p.phase*.137)%1+1)%1*p.length);p.dot.setAttribute('cx',q.x);p.dot.setAttribute('cy',q.y);});window.__t=time;};
+  window.__check=()=>{
+    const errors=[],page=config.pages[selected];
+    graph.querySelectorAll('.node').forEach(element=>{
+      const n=page.nodes.find(n=>n.id===element.dataset.node);
+      const frame=element.querySelector('rect').getBoundingClientRect(),scale=frame.width/n.w;
+      element.querySelectorAll('text').forEach(t=>{const b=t.getBoundingClientRect();if(b.left<frame.left||b.right>frame.right-3*scale||b.top<frame.top||b.bottom>frame.bottom-2*scale)errors.push('node text: '+n.id+'/'+t.textContent);});
+    });
+    return errors;
+  };
+  previous.onclick=()=>selectPage(selected-1);next.onclick=()=>selectPage(selected+1);
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.querySelector('#page-status small').textContent='当前图 · 点击切换';
+  document.fonts.ready.then(()=>{selectPage(0);window.__ready=true;if(!new URLSearchParams(location.search).has('manual')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const loop=now=>{window.seek((now-start)/1000);requestAnimationFrame(loop);};requestAnimationFrame(loop);}});
+})();
+</script></body></html>

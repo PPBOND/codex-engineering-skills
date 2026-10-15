@@ -1,0 +1,3 @@
+interface:
+  display_name: "Brooks 测试质量"
+  short_description: "Review brittle tests, mocks, and coverage gaps"

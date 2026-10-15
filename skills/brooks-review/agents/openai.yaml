@@ -1,0 +1,3 @@
+interface:
+  display_name: "Brooks 代码审查"
+  short_description: "Review code changes for maintainability risks"
